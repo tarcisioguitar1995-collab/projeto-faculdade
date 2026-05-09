@@ -46,3 +46,16 @@ export const associarFornecedor = (produtoId, fornecedorId) =>
   });
 export const desassociarFornecedor = (produtoId, fornecedorId) =>
   request(`/produtos/${produtoId}/fornecedores/${fornecedorId}`, { method: 'DELETE' });
+
+// ficha técnica
+export const listarFichaTecnica = (produtoId) =>
+  request(`/produtos/${produtoId}/ficha-tecnica`);
+export const salvarFichaTecnica = (produtoId, itens) =>
+  request(`/produtos/${produtoId}/ficha-tecnica`, {
+    method: 'POST',
+    body: JSON.stringify({ itens })
+  });
+
+// produção
+export const registrarProducao = (dados) =>
+  request('/producao', { method: 'POST', body: JSON.stringify(dados) });

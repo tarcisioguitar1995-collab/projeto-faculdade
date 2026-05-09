@@ -1,11 +1,16 @@
 const db = require('../database');
 
+const UNIDADES = ['g', 'ml', 'un'];
+
 function validarCampos(dados) {
   const { nome, descricao, categoria } = dados;
   const erros = {};
   if (!nome) erros.nome = 'Nome é obrigatório';
   if (!descricao) erros.descricao = 'Descrição é obrigatória';
   if (!categoria) erros.categoria = 'Categoria é obrigatória';
+  if (dados.unidade_medida && !UNIDADES.includes(dados.unidade_medida)) {
+    erros.unidade_medida = 'Unidade de medida deve ser g, ml ou un';
+  }
   return erros;
 }
 
@@ -26,7 +31,7 @@ function criar(req, res) {
     return res.status(400).json({ erros });
   }
 
-  const { nome, codigo_barras, descricao, quantidade, categoria, data_validade, imagem } = req.body;
+  const { nome, codigo_barras, descricao, quantidade, estoque_minimo, unidade_medida, categoria, data_validade, imagem } = req.body;
 
   // verifica código de barras duplicado (se informado)
   if (codigo_barras) {
@@ -37,13 +42,15 @@ function criar(req, res) {
   }
 
   const result = db.prepare(`
-    INSERT INTO produto (nome, codigo_barras, descricao, quantidade, categoria, data_validade, imagem)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO produto (nome, codigo_barras, descricao, quantidade, estoque_minimo, unidade_medida, categoria, data_validade, imagem)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     nome,
     codigo_barras || null,
     descricao,
     quantidade || 0,
+    estoque_minimo || 0,
+    unidade_medida || 'un',
     categoria,
     data_validade || null,
     imagem || null
@@ -65,7 +72,7 @@ function atualizar(req, res) {
     return res.status(400).json({ erros });
   }
 
-  const { nome, codigo_barras, descricao, quantidade, categoria, data_validade, imagem } = req.body;
+  const { nome, codigo_barras, descricao, quantidade, estoque_minimo, unidade_medida, categoria, data_validade, imagem } = req.body;
 
   if (codigo_barras && codigo_barras !== existente.codigo_barras) {
     const outro = db.prepare('SELECT id FROM produto WHERE codigo_barras = ? AND id != ?').get(codigo_barras, id);
@@ -75,13 +82,15 @@ function atualizar(req, res) {
   }
 
   db.prepare(`
-    UPDATE produto SET nome=?, codigo_barras=?, descricao=?, quantidade=?, categoria=?, data_validade=?, imagem=?
+    UPDATE produto SET nome=?, codigo_barras=?, descricao=?, quantidade=?, estoque_minimo=?, unidade_medida=?, categoria=?, data_validade=?, imagem=?
     WHERE id=?
   `).run(
     nome,
     codigo_barras || null,
     descricao,
     quantidade || 0,
+    estoque_minimo || 0,
+    unidade_medida || 'un',
     categoria,
     data_validade || null,
     imagem || null,

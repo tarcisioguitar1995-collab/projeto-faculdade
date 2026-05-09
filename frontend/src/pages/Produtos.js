@@ -3,11 +3,15 @@ import * as api from '../services/api';
 
 const CATEGORIAS = ['Eletrônicos', 'Alimentos', 'Vestuário', 'Higiene', 'Limpeza', 'Outro'];
 
+const UNIDADES = ['g', 'ml', 'un'];
+
 const FORM_VAZIO = {
   nome: '',
   codigo_barras: '',
   descricao: '',
   quantidade: '',
+  estoque_minimo: '',
+  unidade_medida: 'un',
   categoria: '',
   categoria_outro: '',
   data_validade: '',
@@ -59,6 +63,8 @@ function Produtos() {
       codigo_barras: form.codigo_barras || null,
       descricao: form.descricao,
       quantidade: form.quantidade === '' ? 0 : Number(form.quantidade),
+      estoque_minimo: form.estoque_minimo === '' ? 0 : Number(form.estoque_minimo),
+      unidade_medida: form.unidade_medida,
       categoria: form.categoria === 'Outro' ? form.categoria_outro.trim() : form.categoria,
       data_validade: form.data_validade || null,
       imagem: form.imagem || null
@@ -90,6 +96,8 @@ function Produtos() {
       codigo_barras: p.codigo_barras || '',
       descricao: p.descricao || '',
       quantidade: p.quantidade !== null && p.quantidade !== undefined ? String(p.quantidade) : '',
+      estoque_minimo: p.estoque_minimo !== null && p.estoque_minimo !== undefined ? String(p.estoque_minimo) : '',
+      unidade_medida: p.unidade_medida || 'un',
       categoria: ehCategoriaConhecida ? p.categoria : 'Outro',
       categoria_outro: ehCategoriaConhecida ? '' : p.categoria || '',
       data_validade: p.data_validade || '',
@@ -173,6 +181,29 @@ function Produtos() {
           </div>
 
           <div className="form-group">
+            <label>Estoque Mínimo</label>
+            <input
+              type="number"
+              min="0"
+              value={form.estoque_minimo}
+              onChange={(e) => mudar('estoque_minimo', e.target.value)}
+              placeholder="Nível mínimo permitido"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Unidade de Medida</label>
+            <select
+              value={form.unidade_medida}
+              onChange={(e) => mudar('unidade_medida', e.target.value)}
+            >
+              {UNIDADES.map((u) => (
+                <option key={u} value={u}>{u}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Categoria *</label>
             <select
               className={erros.categoria ? 'invalido' : ''}
@@ -246,34 +277,41 @@ function Produtos() {
                 <th>Código de Barras</th>
                 <th>Categoria</th>
                 <th>Quantidade</th>
+                <th>Est. Mínimo</th>
+                <th>Un.</th>
                 <th>Validade</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {produtos.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.nome}</td>
-                  <td>{p.codigo_barras || '—'}</td>
-                  <td>{p.categoria}</td>
-                  <td>{p.quantidade ?? 0}</td>
-                  <td>{p.data_validade || '—'}</td>
-                  <td>
-                    <button
-                      className="btn btn-secondary btn-pequeno"
-                      onClick={() => editar(p)}
-                    >
-                      Editar
-                    </button>{' '}
-                    <button
-                      className="btn btn-danger btn-pequeno"
-                      onClick={() => remover(p.id)}
-                    >
-                      Remover
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {produtos.map((p) => {
+                const estoqueCritico = p.estoque_minimo > 0 && p.quantidade <= p.estoque_minimo;
+                return (
+                  <tr key={p.id} className={estoqueCritico ? 'estoque-critico' : ''}>
+                    <td>{p.nome}</td>
+                    <td>{p.codigo_barras || '—'}</td>
+                    <td>{p.categoria}</td>
+                    <td>{p.quantidade ?? 0}</td>
+                    <td>{p.estoque_minimo ?? 0}</td>
+                    <td>{p.unidade_medida || 'un'}</td>
+                    <td>{p.data_validade || '—'}</td>
+                    <td>
+                      <button
+                        className="btn btn-secondary btn-pequeno"
+                        onClick={() => editar(p)}
+                      >
+                        Editar
+                      </button>{' '}
+                      <button
+                        className="btn btn-danger btn-pequeno"
+                        onClick={() => remover(p.id)}
+                      >
+                        Remover
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

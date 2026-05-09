@@ -6,6 +6,8 @@ require('./database');
 
 const fornecedoresRouter = require('./routes/fornecedores');
 const produtosRouter = require('./routes/produtos');
+const fichasTecnicasRouter = require('./routes/fichasTecnicas');
+const producaoRouter = require('./routes/producao');
 
 const app = express();
 
@@ -15,12 +17,14 @@ app.use(express.json());
 // rotas
 app.use('/fornecedores', fornecedoresRouter);
 app.use('/produtos', produtosRouter);
+app.use('/fichas-tecnicas', fichasTecnicasRouter);
+app.use('/producao', producaoRouter);
 
 // rota raiz - útil para verificar se o servidor está no ar
 app.get('/', (req, res) => {
   res.json({
     mensagem: 'API do Projeto Integrador - Sistema de Controle de Estoque',
-    endpoints: ['/fornecedores', '/produtos', '/produtos/:id/fornecedores']
+    endpoints: ['/fornecedores', '/produtos', '/produtos/:id/fornecedores', '/fichas-tecnicas/:produto_id', '/producao']
   });
 });
 

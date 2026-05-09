@@ -195,3 +195,29 @@
 .detalhes-produto p {
   margin: 6px 0;
 }
+
+.linha-insumo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.linha-insumo .form-group {
+  margin-bottom: 8px;
+}
+
+.estoque-critico td {
+  background: #fef2f2 !important;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.estoque-critico:hover td {
+  background: #fee2e2 !important;
+}
+
+.alerta-alerta {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
