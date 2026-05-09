@@ -1,4 +1,4 @@
-# Projeto Integrador: Full Stack — MM Churros
+# Projeto Integrador: Full Stack
 
 Sistema de Controle de Estoque e Gestão de Produção desenvolvido como Projeto Integrador da disciplina de Full Stack — Faculdade Gran.
 
